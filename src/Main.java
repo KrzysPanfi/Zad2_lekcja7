@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
-        String filepath="wiadomosc.txt";
+        String filepath="wiadomosc1.txt";
        ArrayList<String>szyfr=Download(filepath);
         ArrayList<String>wynik=zad1(szyfr);
         for(String i:wynik){
@@ -36,13 +36,13 @@ public class Main {
        ArrayList<String>Wynik=new ArrayList<>();
        String ciag=szyfr.get(2);
        char[] wiad=szyfr.get(1).toCharArray();
-       char[] UpperCaseAlphabet = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-       int liczba1=Integer.parseInt(ciag.substring(0,7),2);
-       int liczba2=Integer.parseInt(ciag.substring(8,15),2);
+       String alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+       int liczba1=Integer.parseInt(ciag.substring(0,8),2);
+       int liczba2=Integer.parseInt(ciag.substring(8,16),2);
        int liczba1_copy=liczba1;
        int liczba2_copy=liczba2;
        int liczba3=0;
-       int k=Integer.parseInt(ciag.substring(16,23),2);
+       int k=Integer.parseInt(ciag.substring(16,24),2);
         String oper=szyfr.get(3);
        int liczba_przes_w_prawo=0;
         int liczba_przes_w_lewo=0;
@@ -54,35 +54,44 @@ public class Main {
        for (int i=0;i<wiad.length;i++){
            char ch=chars[i];
            char mes=wiad[i];
-           liczba3=(liczba1+liczba2)%k;
-           liczba1=liczba2;
-           liczba2=liczba3;
-           int originalAlphabetPosition=0;
-           int newAlphabetPosition=0;
-           char newCharacter;
-           Wynik.add(String.valueOf(liczba3));
+          if (i==0) {
+              liczba3=liczba1;
+         }
+         else if(i==1){
+              liczba3=liczba2;
+        }
+         else {
+              liczba1 = liczba2;
+              liczba2 = liczba3;
+              liczba3 = (liczba1 + liczba2) % k;
+          }
+          Wynik.add(String.valueOf(liczba3));
+           int pos=alphabet.indexOf(mes);
            switch (ch){
                case '\\':
-                   liczba_przes_w_prawo++;
-                   originalAlphabetPosition = mes - 'a';
-                    newAlphabetPosition = (originalAlphabetPosition + liczba3) % 26;
-                    newCharacter = (char) ('a' + newAlphabetPosition);
-                   odk.append(newCharacter);
+                   liczba_przes_w_lewo++;
+                   int decryptPos = (pos - liczba3);
+                   if (decryptPos < 0){
+                       decryptPos += alphabet.length();
+                   }
+                   char decryptChar = alphabet.charAt(decryptPos);
+                   odk.append(decryptChar);
                    break;
                case'/':
-                   liczba_przes_w_lewo++;
-                    originalAlphabetPosition = mes - 'a';
-                    newAlphabetPosition = (originalAlphabetPosition + (26 - (liczba3 % 26))) % 26;
-                    newCharacter = (char) ('a' + newAlphabetPosition);
-                   odk.append(newCharacter);
+                   liczba_przes_w_prawo++;
+                   int encpos=(liczba3+pos);
+                   if(encpos>alphabet.length())
+                   {
+                       encpos-=alphabet.length();
+                   }
+                   char ench=alphabet.charAt(encpos);
+                   odk.append(ench);
                    break;
                case '|':
                    liczba_symmetri++;
-                   liczba_przes_w_lewo++;
-                   originalAlphabetPosition = mes - 'a';
-                   newAlphabetPosition = (originalAlphabetPosition + ( 90 - (liczba3-64  ))) % 26;
-                   newCharacter = (char) ('a' + newAlphabetPosition);
-                   odk.append(newCharacter);
+                   int sympos=25-pos;
+                   char symchar=alphabet.charAt(sympos);
+                   odk.append(symchar);
                    break;
                case '-':
                    liczba_reset++;
@@ -95,7 +104,7 @@ public class Main {
        Wynik.add(odk.toString());
        Wynik.add(liczba_przes_w_prawo+" liczba \\");
        Wynik.add(liczba_przes_w_lewo+" liczba /");
-       Wynik.add(liczba_reset+" liczba |");
+       Wynik.add(liczba_symmetri+" liczba |");
        Wynik.add(liczba_reset+" liczba -");
        return Wynik;
     }
