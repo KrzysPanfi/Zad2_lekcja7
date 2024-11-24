@@ -51,8 +51,11 @@ public class Main {
         StringBuilder odk=new StringBuilder();
 
        char[]chars=oper.toCharArray();
-       for (int i=0;i<wiad.length;i++){
-           char ch=chars[i];
+       int i=0;
+       int j=0;
+        while(i<wiad.length&&j<chars.length){
+       //for (int i=0;i<wiad.length;i++){
+           char ch=chars[j];
            char mes=wiad[i];
           if (i==0) {
               liczba3=liczba1;
@@ -61,49 +64,53 @@ public class Main {
               liczba3=liczba2;
         }
          else {
+              liczba3 = (liczba1 + liczba2) % k;
               liczba1 = liczba2;
               liczba2 = liczba3;
-              liczba3 = (liczba1 + liczba2) % k;
+
           }
           Wynik.add(String.valueOf(liczba3));
            int pos=alphabet.indexOf(mes);
            switch (ch){
                case '\\':
                    liczba_przes_w_lewo++;
-                   int decryptPos = (pos - liczba3);
+                   int decryptPos = (pos - liczba3)%26;
                    if (decryptPos < 0){
                        decryptPos += alphabet.length();
                    }
                    char decryptChar = alphabet.charAt(decryptPos);
                    odk.append(decryptChar);
+                   i++;
+                   j++;
                    break;
                case'/':
                    liczba_przes_w_prawo++;
-                   int encpos=(liczba3+pos);
-                   if(encpos>alphabet.length())
-                   {
-                       encpos-=alphabet.length();
-                   }
+                   int encpos=(liczba3+pos)%26;
                    char ench=alphabet.charAt(encpos);
                    odk.append(ench);
+                   i++;
+                   j++;
                    break;
                case '|':
                    liczba_symmetri++;
                    int sympos=25-pos;
                    char symchar=alphabet.charAt(sympos);
                    odk.append(symchar);
+                   i++;
+                   j++;
                    break;
                case '-':
                    liczba_reset++;
                    liczba1=liczba1_copy;
                    liczba2=liczba2_copy;
+                   j++;
                    break;
            }
 
        }
        Wynik.add(odk.toString());
-       Wynik.add(liczba_przes_w_prawo+" liczba \\");
-       Wynik.add(liczba_przes_w_lewo+" liczba /");
+       Wynik.add(liczba_przes_w_lewo+" liczba \\");
+       Wynik.add(liczba_przes_w_prawo+" liczba /");
        Wynik.add(liczba_symmetri+" liczba |");
        Wynik.add(liczba_reset+" liczba -");
        return Wynik;
